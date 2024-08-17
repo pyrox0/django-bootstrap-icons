@@ -1,4 +1,5 @@
 """ django bootstrap icons templatetags """
+
 import os
 from pathlib import Path
 import requests
@@ -6,6 +7,7 @@ from defusedxml.minidom import parse, parseString
 
 from django.conf import settings
 from django.contrib.staticfiles.finders import find
+
 # noinspection PyProtectedMember
 from django.core.exceptions import ImproperlyConfigured
 from django.template import Library
@@ -20,11 +22,7 @@ def get_static(icon_name):
     :param icon_name:
     :return: icon path
     """
-    custom_dir = getattr(
-        settings,
-        'BS_ICONS_CUSTOM_PATH',
-        'custom-icons'
-    )
+    custom_dir = getattr(settings, "BS_ICONS_CUSTOM_PATH", "custom-icons")
 
     if settings.DEBUG:
         custom_path = find(custom_dir)
@@ -38,85 +36,94 @@ def get_static(icon_name):
         ex_msg = "BS_ICONS_CUSTOM_PATH does not exist."
         raise ImproperlyConfigured(ex_msg)
 
-    return os.path.join(
-        custom_path, '.'.join((icon_name, 'svg'))
-    )
+    return os.path.join(custom_path, ".".join((icon_name, "svg")))
 
 
-def render_svg(content, size, color, extra_classes):
-    """
-    Render the svg with custom properties
+def render_svg(content, size, color, extra_classes, extra_attributes):
+    """Render the svg with custom properties.
+
     :param content:
     :param size:
     :param color:
     :param extra_classes:
+    :param extra_attributes:
     :return:
     """
-    svg = content.getElementsByTagName('svg')
+    svg = content.getElementsByTagName("svg")
 
     if extra_classes:
-        if 'class' in svg[0].attributes:
-            svg[0].attributes['class'].value += ' ' + extra_classes
+        if "class" in svg[0].attributes:
+            svg[0].attributes["class"].value += " " + extra_classes
         else:
-            svg[0].setAttribute('class', extra_classes)
+            svg[0].setAttribute("class", extra_classes)
 
     if size:
-        svg[0].setAttribute('width', size)
-        svg[0].setAttribute('height', size)
+        svg[0].setAttribute("width", size)
+        svg[0].setAttribute("height", size)
 
-    if 'color' not in svg[0].attributes:
-        svg[0].setAttribute('fill', "currentColor")
+    if "color" not in svg[0].attributes:
+        svg[0].setAttribute("fill", "currentColor")
     if color:
-        svg[0].setAttribute('fill', color)
+        svg[0].setAttribute("fill", color)
+    if extra_attributes:
+        for k, v in extra_attributes.items():
+            svg[0].setAttribute(k, v)
 
     return content.toprettyxml()
 
 
 @register.simple_tag
-def custom_icon(icon_name, size=None, color=None, extra_classes=None):
-    """
-    Template tag for rendering a custom icon
+def custom_icon(
+    icon_name, size=None, color=None, extra_classes=None, extra_attributes=None
+):
+    """Template tag for rendering a custom icon.
+
     :param str icon_name: Name of custom icon to render
     :param str size: size of custom icon to render
     :param str color: color of custom icon to render
     :param str extra_classes: String of classes to add to icon
+    :param dict extra_attributes: Extra attributes to add to icon
     """
     if icon_name is None:
-        return ''
+        return ""
 
     icon_path = get_static(icon_name)
     try:
         content = parse(icon_path)
     except FileNotFoundError:
         return f"Icon `{icon_path}` does not exist"
-    return mark_safe(render_svg(content, size, color, extra_classes))
+    return mark_safe(render_svg(content, size, color, extra_classes, extra_attributes))
 
 
-def get_icon(icon_path, icon_name, size=None, color=None, extra_classes=None):
-    """
-    Manage caching of bootstrap icons
+def get_icon(
+    icon_path,
+    icon_name,
+    size=None,
+    color=None,
+    extra_classes=None,
+    extra_attributes=None,
+):
+    """Manage caching of bootstrap icons
+
     :param icon_path icon_path: icon path given by CDN or local path
     :param str icon_name: Name of custom icon to render
     :param str size: size of custom icon to render
     :param str color: color of custom icon to render
     :param str extra_classes: String of classes to add to icon
+    :param dict extra_attributes: Extra attributes to add to icon
     :type icon_path: str or Path
     """
-    cache_path = getattr(
-        settings,
-        'BS_ICONS_CACHE',
-        None
-    )
+    cache_path = getattr(settings, "BS_ICONS_CACHE", None)
     cache_file = None
 
     if cache_path:
         if not os.path.exists(cache_path):
             os.makedirs(cache_path)
-        cache_name = f'{icon_name}_{size}_{color}_{extra_classes}.svg'.replace(' ', '_')
+        cache_name = f"{icon_name}_{size}_{color}_{extra_classes}.svg".replace(" ", "_")
         cache_file = os.path.join(cache_path, cache_name)
         if os.path.exists(cache_file):
             # icon exists in cache, use that
-            with open(cache_file, 'r', encoding="utf-8") as icon_file:
+            with open(cache_file, "r", encoding="utf-8") as icon_file:
                 return icon_file.read()
 
     # cached icon doesn't exist or no cache configured, create and return icon
@@ -151,7 +158,7 @@ def get_icon(icon_path, icon_name, size=None, color=None, extra_classes=None):
         )
 
     content = parseString(svg_string)
-    svg = render_svg(content, size, color, extra_classes)
+    svg = render_svg(content, size, color, extra_classes, extra_attributes)
 
     # if cache configured write icon to cache
     if cache_path and cache_file:
@@ -162,16 +169,19 @@ def get_icon(icon_path, icon_name, size=None, color=None, extra_classes=None):
 
 
 @register.simple_tag
-def bs_icon(icon_name, size=None, color=None, extra_classes=None):
-    """
-    Template tag for rendering a bootstrap icon
+def bs_icon(
+    icon_name, size=None, color=None, extra_classes=None, extra_attributes=None
+):
+    """Template tag for rendering a bootstrap icon.
+
     :param str icon_name: Name of bootstrap icon to render
     :param str size: size of bootstrap icon to render
     :param str color: color of bootstrap icon to render
     :param str extra_classes: String of classes to add to icon
+    :param dict extra_attributes: Extra attributes to add to icon
     """
     if icon_name is None:
-        return ''
+        return ""
 
     base_path = getattr(settings, "BS_ICONS_BASE_PATH", None)
 
@@ -185,31 +195,34 @@ def bs_icon(icon_name, size=None, color=None, extra_classes=None):
         )
         icon_path = f"{base_url}icons/{icon_name}.svg"
 
-    svg = get_icon(icon_path, icon_name, size, color, extra_classes)
+    svg = get_icon(icon_path, icon_name, size, color, extra_classes, extra_attributes)
     return mark_safe(svg)
 
 
 @register.simple_tag
-def md_icon(icon_name, size=None, color=None, extra_classes=None):
-    """
-    Template tag for rendering a material design icon
+def md_icon(
+    icon_name, size=None, color=None, extra_classes=None, extra_attributes=None
+):
+    """Template tag for rendering a material design icon.
+
     :param str icon_name: Name of bootstrap icon to render
     :param str size: size of bootstrap icon to render
     :param str color: color of bootstrap icon to render
     :param str extra_classes: String of classes to add to icon
+    :param dict extra_attributes: Extra attributes to add to icon
     """
     if icon_name is None:
-        return ''
+        return ""
 
     # set some classes, so one can style the icons globally
     if extra_classes is None:
-        extra_classes = f'mdi mdi-{icon_name}'
+        extra_classes = f"mdi mdi-{icon_name}"
     else:
-        extra_classes = f'mdi mdi-{icon_name} {extra_classes}'
+        extra_classes = f"mdi mdi-{icon_name} {extra_classes}"
 
     # Set same size for mdi like bi
     if size is None:
-        size = '20'
+        size = "20"
 
     base_path = getattr(settings, "MD_ICONS_BASE_PATH", None)
 
@@ -223,5 +236,5 @@ def md_icon(icon_name, size=None, color=None, extra_classes=None):
         )
         icon_path = f"{base_url}svg/{icon_name}.svg"
 
-    svg = get_icon(icon_path, icon_name, size, color, extra_classes)
+    svg = get_icon(icon_path, icon_name, size, color, extra_classes, extra_attributes)
     return mark_safe(svg)
