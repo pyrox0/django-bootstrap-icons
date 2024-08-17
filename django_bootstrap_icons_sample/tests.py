@@ -49,7 +49,7 @@ class BootstrapIconsTest(TestCase):
     def test_render_svg(self):
         icon_path = get_static('apps')
         content = parse(icon_path)
-        rendered = render_svg(content, size=None, color=None, extra_classes=None)
+        rendered = render_svg(content, size=None, color=None, extra_classes=None, extra_attributes=None)
         self.assertIn('id="test-icon"', rendered)
         self.assertIn('viewBox="0 0 24 24"', rendered)
         self.assertIn('width="24"', rendered)
@@ -57,7 +57,7 @@ class BootstrapIconsTest(TestCase):
     def test_render_svg_size(self):
         icon_path = get_static('apps')
         content = parse(icon_path)
-        rendered = render_svg(content, size='20px', color=None, extra_classes=None)
+        rendered = render_svg(content, size='20px', color=None, extra_classes=None, extra_attributes=None)
         self.assertIn('width="20px"', rendered)
         self.assertIn('height="20px"', rendered)
 
@@ -66,7 +66,7 @@ class BootstrapIconsTest(TestCase):
         content = parse(icon_path)
         self.assertIn(
             'fill="red"',
-            render_svg(content, size=None, color='red', extra_classes=None)
+            render_svg(content, size=None, color='red', extra_classes=None, extra_attributes=None)
         )
 
     def test_render_svg_extra_classes(self):
@@ -74,7 +74,7 @@ class BootstrapIconsTest(TestCase):
         content = parse(icon_path)
         self.assertIn(
             'class="class_a, class_b"',
-            render_svg(content, size=None, color=None, extra_classes='class_a, class_b')
+            render_svg(content, size=None, color=None, extra_classes='class_a, class_b', extra_attributes=None)
         )
 
     def test_render_svg_extra_classes_icon_class(self):
@@ -82,7 +82,7 @@ class BootstrapIconsTest(TestCase):
         content = parse(icon_path)
         self.assertIn(
             'class="test class_a class_b"',
-            render_svg(content, size=None, color=None, extra_classes='class_a class_b')
+            render_svg(content, size=None, color=None, extra_classes='class_a class_b', extra_attributes=None)
         )
 
     def test_custom_icon(self):

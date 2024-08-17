@@ -6,20 +6,20 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![codecov](https://codecov.io/gh/christianwgd/django-bootstrap-icons/branch/master/graph/badge.svg?token=O4MWGYV52K)](https://codecov.io/gh/christianwgd/django-bootstrap-icons)
 
-A quick way to add [Bootstrap Icons](https://icons.getbootstrap.com) with Django 
+A quick way to add [Bootstrap Icons](https://icons.getbootstrap.com) with Django
 template tags.
 
-Embed bootstrap svg icons in your django templates with the possibility for styling 
+Embed bootstrap svg icons in your django templates with the possibility for styling
 and sizing.
 
 ## Installing
 
-`django-bootstrap-icons` can be found on pypi. Run `pip install django-bootstrap-icons` 
+`django-bootstrap-icons` can be found on pypi. Run `pip install django-bootstrap-icons`
 to install the package on your machine or in your virtual environment.
 
 ## Getting Started
 
-Using django-bootstrap-icons is easy. First, add the `django_bootstrap_icons` 
+Using django-bootstrap-icons is easy. First, add the `django_bootstrap_icons`
 Django app in your settings file.
 
 ```
@@ -34,7 +34,7 @@ Also, load the tag library in your template file:
 {% load bootstrap_icons %}
 ```
 
-Then, add an icon with the following tag. Give the icon's name as the 
+Then, add an icon with the following tag. Give the icon's name as the
 first parameter, and that's all that's required:
 
 ```
@@ -63,11 +63,19 @@ For further styling, you can add extra css classes:
 {% bs_icon 'alarm' extra_classes="your-classname1 your-classname2" %}
 ```
 
+### Extra Attributes
+
+Set additional HTML attributes on your icon:
+
+```
+{% bs_icon 'sun' extra_attributes={"aria-label": "The Sun", "tabindex": "-1"} %}
+```
+
 #### Vertical alignment
 
-By default, all sgv bootstrap icons are vertical aligned to the middle. Sometimes this is 
-not appropriate, especially when rendering beside text. To align with text *django-bootstrap-icons*
-provides some css classes to set the desired vertical alignment. 
+By default, all svg bootstrap icons are vertical aligned to the middle. Sometimes this is
+not appropriate, especially when rendering beside text. To align with text _django-bootstrap-icons_
+provides some css classes to set the desired vertical alignment.
 
 Include the css file into your template
 
@@ -75,7 +83,7 @@ Include the css file into your template
 <link rel="stylesheet" href="{% static 'bootstrap_icons/css/bootstrap_icons.css' %}">
 ```
 
-and add the class to the *extra_classes* parameter
+and add the class to the _extra_classes_ parameter
 
 ```
 {% bs_icon 'alarm' extra_classes="bi-valign-bottom" %}
@@ -85,7 +93,7 @@ The following classes are available:
 
 ```
 .bi-valign-default /* This is a compromise also provided by bootstrap
-                     for the icon font. The value is vertical-align: -.125em; 
+                     for the icon font. The value is vertical-align: -.125em;
                      (see https://github.com/twbs/icons/issues/601 for details) */
 .bi-valign-middle /* this is the default from bootstrap for svg */
 .bi-valign-bottom
@@ -93,11 +101,12 @@ The following classes are available:
 .bi-valign-text-bottom
 ```
 
-If you have included the django-bootstrap-icons css, the default alignment will be to 
+If you have included the django-bootstrap-icons css, the default alignment will be to
 the values from ".bi-valign-default", so no need to add a class explicitly.
- 
+
 ### Custom icons
-There's a template tag for your custom icons. Store the custom icons in some 
+
+There's a template tag for your custom icons. Store the custom icons in some
 static directory. SET the BS_ICONS_CUSTOM_PATH setting to point to that static directory.
 
 ```
@@ -106,34 +115,33 @@ static directory. SET the BS_ICONS_CUSTOM_PATH setting to point to that static d
 
 The custom template accepts the same parameter as the bootstrap icon template.
 
-In fact you could download the bootstrap icons from bootstrap, store them in 
-your static files and use them with the custom_icon template tag. This would 
-avoid the use of CDN completely. 
+In fact you could download the bootstrap icons from bootstrap, store them in
+your static files and use them with the custom_icon template tag. This would
+avoid the use of CDN completely.
 
 ### Material Design Icons
 
-*django-bootstrap-icons* works fine with Material Design Icons. There is a template
+_django-bootstrap-icons_ works fine with Material Design Icons. There is a template
 tag for MDI:
 
 ```
 {% md_icon 'alarm' %}
 ```
 
-Material Design Icons get some additional css classes *mdi* and *mdi-<icon-name>* to 
+Material Design Icons get some additional css classes _mdi_ and _mdi-<icon-name>_ to
 style them globally.
 
-To use Material Design Icons side-by-side with bootstrap icons *django-bootstrap-icons* 
+To use Material Design Icons side-by-side with bootstrap icons _django-bootstrap-icons_
 makes some adjustments in rendering the icons:
 
-* The base size of Material Design Icons is larger than the size of bootstrap icons. 
-  For the default size (no size attribute given), *django-bootstrap* icons are resized.
+- The base size of Material Design Icons is larger than the size of bootstrap icons.
+  For the default size (no size attribute given), _django-bootstrap_ icons are resized.
   If you want to have the same size as Bootstrap Icons, set them to a size factor of 1.25.
-  If Bootstrap Icon is of size 2em, set Material Icon to 2.5em. (Although the base size 
+  If Bootstrap Icon is of size 2em, set Material Icon to 2.5em. (Although the base size
   in mdi svgs is 24 the real size of the icon is 20 because of some empty space, that
   surrounds the icons).
-  
-* Because of that empty white space of the MDI (sort of some internal "padding" in svg)
-  you need to include the django-bootstrap-icons css file to make some adjustments to 
+- Because of that empty white space of the MDI (sort of some internal "padding" in svg)
+  you need to include the django-bootstrap-icons css file to make some adjustments to
   the alignment.
 
 ```
@@ -148,19 +156,19 @@ You can specify the source from which the icons are loaded:
 BS_ICONS_BASE_URL = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/'
 ```
 
-BS_ICONS_BASE_URL defaults to the latest boostrap-icons CDN that was available 
+BS_ICONS_BASE_URL defaults to the latest boostrap-icons CDN that was available
 when releasing this package. Change the URL to use an older or newer one.
 
-You can also load icons from a local path. This will disable downloading icons 
+You can also load icons from a local path. This will disable downloading icons
 from BS_ICONS_BASE_URL:
 
 ```
 BS_ICONS_BASE_PATH = 'node_modules/bootstrap-icons/'
 ```
 
-To add custom icons to your app you need to set the path where these can be found. 
-The default setting is *custom-icons*, so you would add your icons 
-to */your-app/static/custom-icons/*.
+To add custom icons to your app you need to set the path where these can be found.
+The default setting is _custom-icons_, so you would add your icons
+to _/your-app/static/custom-icons/_.
 
 ```
 BS_ICONS_CUSTOM_PATH = 'custom-icons'
@@ -176,7 +184,7 @@ MD_ICONS_BASE_URL = 'https://cdn.jsdelivr.net/npm/@mdi/svg@7.2.96/'
 
 You can change it to your desired location by overriding this setting.
 
-You can also load icons from a local path.  This will disable downloading icons 
+You can also load icons from a local path. This will disable downloading icons
 from MD_ICONS_BASE_URL:
 
 ```
@@ -191,7 +199,7 @@ To avoid fetching icons multiple times, configure the icon cache directory:
 BS_ICONS_CACHE = os.path.join(STATIC_ROOT, 'icon_cache')
 ```
 
-This will ensure that icons will be loaded only once with their individual svg properties 
+This will ensure that icons will be loaded only once with their individual svg properties
 and stored to a local file. On each subsequent use the icon will be simply loaded from file.
 
 ### Configure icon not found return
@@ -216,18 +224,20 @@ BS_ICONS_NOT_FOUND = '<?xml version="1.0" ?>\
 
 ## License
 
-This project is licensed under the MIT License - see the 
+This project is licensed under the MIT License - see the
 [LICENSE](https://github.com/christianwgd/django-bootstrap-icons/blob/master/LICENSE) file for details
 
 ## Acknowledgments
 
-* Thanks to [Bootstrap Icons](https://icons.getbootstrap.com)!
-* Thanks to [Material Design Icons](https://google.github.io/material-design-icons/)!
+- Thanks to [Bootstrap Icons](https://icons.getbootstrap.com)!
+- Thanks to [Material Design Icons](https://google.github.io/material-design-icons/)!
 
 ## Releases
+
 - see CHANGELOG.md
 
 ## Run the sample app
+
 ```
 git clone https://github.com/christianwgd/django-bootstrap-icons.git
 cd django-bootstrap-icons
@@ -237,11 +247,13 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Output of the example app: 
+Output of the example app:
 ![example](https://github.com/christianwgd/django-bootstrap-icons/blob/master/sample-app-result.png "Sample App Output")
 
 ## Run the tests
+
 Setup the sample app (see above)
+
 ```
 python manage.py test
 ```
