@@ -1,6 +1,7 @@
 """ django bootstrap icons templatetags """
 
 import os
+from ast import literal_eval
 from pathlib import Path
 import requests
 from defusedxml.minidom import parse, parseString
@@ -66,7 +67,8 @@ def render_svg(content, size, color, extra_classes, extra_attributes):
     if color:
         svg[0].setAttribute("fill", color)
     if extra_attributes:
-        for k, v in extra_attributes.items():
+        attrs = dict(literal_eval(extra_attributes))
+        for k, v in attrs.items():
             svg[0].setAttribute(k, v)
 
     return content.toprettyxml()
@@ -110,7 +112,7 @@ def get_icon(
     :param str size: size of custom icon to render
     :param str color: color of custom icon to render
     :param str extra_classes: String of classes to add to icon
-    :param dict extra_attributes: Extra attributes to add to icon
+    :param str extra_attributes: Extra attributes to add to icon
     :type icon_path: str or Path
     """
     cache_path = getattr(settings, "BS_ICONS_CACHE", None)
@@ -178,7 +180,7 @@ def bs_icon(
     :param str size: size of bootstrap icon to render
     :param str color: color of bootstrap icon to render
     :param str extra_classes: String of classes to add to icon
-    :param dict extra_attributes: Extra attributes to add to icon
+    :param str extra_attributes: Extra attributes to add to icon
     """
     if icon_name is None:
         return ""
@@ -204,12 +206,11 @@ def md_icon(
     icon_name, size=None, color=None, extra_classes=None, extra_attributes=None
 ):
     """Template tag for rendering a material design icon.
-
     :param str icon_name: Name of bootstrap icon to render
     :param str size: size of bootstrap icon to render
     :param str color: color of bootstrap icon to render
     :param str extra_classes: String of classes to add to icon
-    :param dict extra_attributes: Extra attributes to add to icon
+    :param str extra_attributes: Extra attributes to add to icon
     """
     if icon_name is None:
         return ""
